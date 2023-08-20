@@ -1,0 +1,38 @@
+3. Give the details of the authors who have
+2 or more books in the catalog and the price
+of the books is greater than the average
+price of the books in the catalog and the
+year of publication is after 2000.
+SELECT *
+FROM AUTHOR a
+WHERE a. author_id IN
+(SELECT c. author_id
+FROM CATALOG
+WHERE c. year > 2000 AND
+c.price > (SELECT AVG(price) FROM
+CATALOG)
+GROUP BY c.author_id
+having count(c.authorid)>=2);
+
+4. Find the author of the book which has
+maximum sales.
+create view new as (
+select sum(o.quantity) as "SUM",
+o.book_id
+from order_details o
+group by o.book_id);
+select a.aname
+from author a,catalog c,new n
+where n.book_id=c.book_id and
+a.author_id=c.author_id and
+n.sum in(select max(sum) from new);
+
+5. Demonstrate how you increase the price
+of books published by a specific publisher
+by 10%.
+UPDATE CATALOG
+SET price = price*1.1
+WHERE Publisher_id IN
+( SELECT Publisher_id
+FROM PUBLISHER
+WHERE name='shiva');
