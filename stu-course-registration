@@ -1,0 +1,71 @@
+To identify the student(s) who are charged an average fee less than INR 1800 and have registered for more than one course, you can use the following query:
+SQL
+SELECT studentid, AVG(fee) AS AVGFEE
+FROM registration
+GROUP BY studentid
+HAVING AVG(fee) < 1800
+AND COUNT(*) > 1;
+
+
+To create a view to identify the course details that contain more than 12 letters in the course name with duration more than 3 days, you can use the following query:
+SQL
+CREATE VIEW long_course_names AS
+SELECT coursename, noofdays
+FROM course
+WHERE LENGTH(coursename) > 12
+AND noofdays > 3;
+
+
+
+To create a new entity that contains the totalfee collected wrt each course and demonstrate trigger such that on registration of new student the totalfee should be computed, you can use the following queries:
+
+CREATE TABLE totalfee (
+    courseid INT NOT NULL,
+    totalfee INT NOT NULL,
+    CONSTRAINT totalfee_pk PRIMARY KEY (courseid)
+);
+
+CREATE TRIGGER totalfee_trigger
+AFTER INSERT ON registration
+FOR EACH ROW
+BEGIN
+    DECLARE totalfee INT;
+
+    SELECT SUM(fee) INTO totalfee
+    FROM registration
+    WHERE courseid = NEW.courseid;
+
+    UPDATE totalfee
+    SET totalfee = totalfee
+    WHERE courseid = NEW.courseid;
+END;
+
+
+
+To demonstrate the working of the procedure to identify the student(s) having letter T anywhere in their name and who are residing in Bangalore or Mangalore, you can use the following procedure:
+SQL
+CREATE PROCEDURE students_with_t_in_name_bangalore_or_mangalore ()
+BEGIN
+    SELECT studentid, studentname, city
+    FROM student
+    WHERE studentname LIKE '%T%'
+    AND city IN ('Bangalore', 'Mangalore');
+END;
+
+
+
+To demonstrate delete/update cascade with simple query, you can use the following queries:
+SQL
+-- Delete a student
+DELETE FROM student WHERE studentid = 1;
+
+-- Check that the registrations for the deleted student are also deleted
+SELECT * FROM registration WHERE studentid = 1;
+
+-- Update the city of a student
+UPDATE student
+SET city = 'Mumbai'
+WHERE studentid = 1;
+
+-- Check that the registrations for the student are also updated
+SELECT * FROM registration WHERE studentid = 1;
