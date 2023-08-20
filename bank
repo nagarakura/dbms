@@ -1,1 +1,31 @@
-
+3. Find all the customers who have at least
+two accounts at the Main branch.
+SELECT D.customer_name
+FROM DEPOSITOR D, ACCOUNT A
+WHERE A.accno = D.accno AND
+A.branch_name= 'rt nagar'
+GROUP BY D.customer_name
+HAVING COUNT(*) >= 2;
+4. Find all the customers who have an
+account at all the branches located in a
+specific city.
+SELECT DISTINCT D.customer_name
+FROM DEPOSITOR D
+WHERE NOT EXISTS (
+( SELECT branch_name
+FROM BRANCH
+WHERE branch_city='mangaluru')
+MINUS
+(SELECT A.branch_name
+FROM ACCOUNT A, DEPOSITOR K
+WHERE A.accno = K.accno AND
+D.customer_name=K.customer_name));
+5. Demonstrate how you delete all account
+tuples at every branch located in a specific
+city.
+DELETE
+FROM ACCOUNT
+WHERE branch_name IN
+( SELECT branch_name
+FROM BRANCH
+WHERE branch_city = 'mysore');
