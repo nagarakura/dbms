@@ -1,0 +1,70 @@
+SELECT customerid, COUNT(*) AS BOOKS
+FROM purchase
+GROUP BY customerid
+HAVING COUNT(*) > 1
+AND DISTINCT purchasedate;
+
+
+CREATE VIEW same_category_books_purchased_by_different_customers AS
+SELECT customerid, bookid, bookname
+FROM purchase
+WHERE category = ANY (
+    SELECT category
+    FROM purchase
+    GROUP BY category
+    HAVING COUNT(*) > 1
+);
+
+
+CREATE TABLE totalbook_purchased (
+    category VARCHAR(255) NOT NULL,
+    totalbook INT NOT NULL,
+    CONSTRAINT totalbook_pk PRIMARY KEY (category)
+);
+
+CREATE TRIGGER totalbook_purchased_trigger
+AFTER INSERT ON purchase
+FOR EACH ROW
+BEGIN
+    DECLARE totalbook INT;
+
+    SELECT COUNT(*) INTO totalbook
+    FROM purchase
+    WHERE category = NEW.category;
+
+    UPDATE totalbook_purchased
+    SET totalbook = totalbook
+    WHERE category = NEW.category;
+END;
+
+
+
+CREATE PROCEDURE books_purchased_on_the_same_date_as_suresh ()
+BEGIN
+    SELECT customername, bookname
+    FROM purchase
+    WHERE purchasedate = (
+        SELECT purchasedate
+        FROM purchase
+        WHERE customername = 'Suresh'
+    )
+    AND customername != 'Suresh';
+END;
+
+
+
+
+-- Delete a customer
+DELETE FROM customer WHERE customerid = 1;
+
+-- Check that the purchases for the deleted customer are also deleted
+SELECT * FROM purchase WHERE customerid = 1;
+
+-- Update the category of a book
+UPDATE book
+SET category = 'New Category'
+WHERE bookid = 1;
+
+-- Check that the purchases for the book are also updated
+SELECT * FROM purchase WHERE bookid = 1;
+
