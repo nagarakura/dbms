@@ -1,0 +1,76 @@
+Flights (no: integer, src: string, dst: string, distance:
+integer, Departs: time, arrives: time, price: real)
+ Aircraft (aid: integer, aname: string, cruisingrange:
+integer)
+ Certified (eid: integer, aid: integer)
+ Employees (eid: integer, ename: string, salary: integer)
+Note that the Employees relation describes pilots and other
+kinds of employees as well. Every pilot is certified for some
+aircraft, and only pilots are certified to fly. 
+Write each of the following queries in SQL.
+
+Queries:
+1. Find the names of aircraft such that all
+pilots certified to operate them have
+salaries more than Rs.80, 000.
+Method 1.
+SELECT DISTINCT A.aname
+FROM AIRCRAFT A, CERTIFIED C
+WHERE A.aid=C.aid AND
+C.eid IN ( SELECT eid
+FROM EMPLOYEES
+WHERE salary > 80000);
+Method 2.
+SELECT DISTINCT a.aname
+FROM aircraft a
+WHERE a.aid NOT IN
+( SELECT c.aid
+FROM certified c,employees e
+WHERE c.eid=e.eid AND
+e.salary<80000);
+2. For each pilot who is certified for more
+than three aircrafts, find the eid and the
+maximum cruisingrange of the aircraft for
+which she or he is certified.
+SELECT C.eid, MAX(a.cruisingrange)
+FROM CERTIFIED C, AIRCRAFT A
+WHERE C.aid=A.aid
+GROUP BY C.eid
+HAVING COUNT(*) > 3;
+3. Find the names of pilots whose salary is
+less than the price of the cheapest route
+from Bengaluru to Frankfurt.
+SELECT E.ename
+FROM EMPLOYEES E
+WHERE E.salary < (SELECT min(price)
+FROM FLIGHTS
+WHERE fromPlace=‘bangalore’ AND
+oPlace='frankfurt');
+4. For all aircraft with cruising range over
+1000 Kms, .find the name of the aircraft
+and the average salary of all pilots certified
+for this aircraft.
+select aname, avg(salary) as avgsal
+from aircraft a, certified c, employees
+e
+where a.crusingrange>1000 and
+c.aid=a.aid and
+c.eid=e.eid
+group by aname;
+5. Find the names of pilots certified for
+some Boeing aircraft.
+SELECT DISTINCT E.ename
+FROM AIRCRAFT A, CERTIFIED C, EMPLOYEES
+E
+WHERE A.aid=C.aid AND
+C.eid=E.eid AND
+A.aname LIKE 'boeing%';
+6. Find the aids of all aircraft that can be
+used on routes from Bengaluru to New
+Delhi
+SELECT A.aid
+FROM AIRCRAFT A
+WHERE A.cruisingrange > (SELECT
+min(distance) FROM FLIGHTS
+WHERE fromPlace='bangalore' AND
+toPlace = 'delhi');
