@@ -1,0 +1,69 @@
+SELECT id, name
+FROM customers
+WHERE total_flightcharge < (
+    SELECT AVG(total_flightcharge)
+    FROM bookings
+    WHERE travel_class = 'Business'
+);
+
+
+CREATE VIEW international_flights_most_booked AS
+SELECT id, name
+FROM flights
+WHERE travel_class = 'International'
+ORDER BY COUNT(*) DESC;
+
+
+
+CREATE TABLE total_flightcharge (
+    flight_id INT NOT NULL,
+    total_flightcharge INT NOT NULL
+);
+
+CREATE TRIGGER total_flightcharge_trigger
+AFTER INSERT ON bookings
+FOR EACH ROW
+BEGIN
+    DECLARE total_flightcharge INT;
+
+    total_flightcharge = (
+        SELECT SUM(flightcharge)
+        FROM bookings
+        WHERE flight_id = NEW.flight_id
+    );
+
+    UPDATE total_flightcharge
+    SET total_flightcharge = total_flightcharge
+    WHERE flight_id = NEW.flight_id;
+END;
+
+
+
+
+
+CREATE PROCEDURE highest_flightcharge_economy ()
+BEGIN
+    SELECT id, name
+    FROM customers
+    WHERE travel_class = 'Economy'
+    ORDER BY flightcharge DESC
+    LIMIT 1;
+END;
+
+
+
+
+-- Delete a customer
+DELETE FROM customers WHERE id = 1;
+-- Check that the bookings for the deleted customer are also deleted
+SELECT * FROM bookings WHERE customer_id = 1;
+-- Update the travel class of a customer
+UPDATE customers
+SET travel_class = 'Business'
+WHERE id = 1;
+-- Check that the bookings for the customer are also updated
+SELECT * FROM bookings WHERE customer_id = 1;
+
+
+
+
