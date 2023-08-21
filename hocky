@@ -1,0 +1,32 @@
+
+
+
+1.	List all the Players   whose injury severity level is high and who’s name starts with ‘Ba’
+
+SELECT Name 
+FROM Player P, Injury_Record I
+Where P.ID=I.PID and Sev_Level=’High’ and Name Like ‘ Ba%’;
+
+2.	Count the Host teams those who have participated in more than one game.
+SELECT Host_Team, Count (Host_Team)
+FROM Game
+Group By Host_Team
+Having Count(*) >1;
+
+3.	List the names of the Coach in ascending order.
+SELECT Name, Coach
+From Team
+Order By Coach Asc;
+4.	List the names of the Players who started their career in Hockey league from year 2000 to 2010.
+
+	SELECT ID, Name, From_Date
+	FROM Player
+	Where From_Date Like ‘____0’;	
+
+
+
+5.	Count the total number of Game scores by grouping score.
+	SELECT Score, Count(*)
+	From Game
+	Group By Score;
+
