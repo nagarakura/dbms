@@ -1,0 +1,43 @@
+SELECT e.empid, e.empname, p.pid, p.allocationdate
+FROM employee e
+JOIN projectallocation pa ON e.empid = pa.empid
+JOIN project p ON pa.pid = p.pid
+WHERE e.skills NOT LIKE '%DevOps%';
+
+
+CREATE VIEW unallocated_projects AS
+SELECT p.pid, p.pname, NULL AS empid
+FROM project p
+WHERE p.pid NOT IN (
+    SELECT pa.pid
+    FROM projectallocation pa
+);
+
+
+
+CREATE TABLE total_project (
+  empid INT NOT NULL PRIMARY KEY,
+  total_project INT NOT NULL
+);
+
+CREATE TRIGGER projectallocation_after_insert
+AFTER INSERT ON projectallocation
+FOR EACH ROW
+BEGIN
+  UPDATE total_project
+  SET total_project = total_project + 1
+  WHERE empid = NEW.empid;
+END;
+
+
+
+SELECT e.empid, e.empname, p.pid, p.allocationdate
+FROM employee e
+JOIN projectallocation pa ON e.empid = pa.empid
+JOIN project p ON pa.pid = p.pid
+WHERE e.skills NOT LIKE '%Security%';
+
+
+DELETE FROM projectallocation
+WHERE pid = 1;
+
