@@ -1,0 +1,75 @@
+
+Movie Database with solutions
+1.	List the titles of all movies directed by ‘Sanjay Leela Bansali’.
+
+SELECT MOV_TITLE
+
+FROM MOVIES
+
+WHERE DIR_ID IN (SELECT DIR_ID
+
+     FROM DIRECTOR
+
+      WHERE DIR_NAME = ‗HITCHCOCK‘);
+
+2.	  Display all artists who acted in a film between 2016 and 2018.
+
+	SELECT a.art_name,  f.film_title, f.film_year 
+	FROM artist a, casting c, films f
+	WHERE a.art_id=c.art_id and c.film_id=f.film_id and f.film_year  between 2016 and 2018;
+
+3.	Display the names of films with the stars received and sort the result on the basis of stars.
+	SELECT F.FILM_TITLE, R_stars
+	FROM films f, review r
+	WHERE f.film_id=r.film_id
+	ORDER BY r.stars desc
+4.	Find the movie names where one or more actors acted in two or more movies.
+
+SELECT MOV_TITLE
+
+FROM MOVIES M, MOVIE_CAST MV
+
+WHERE M.MOV_ID=MV.MOV_ID AND ACT_ID IN
+ (SELECT ACT_ID 
+  FROM MOVIE_CAST 
+ GROUP BY ACT_ID
+ HAVING COUNT (ACT_ID)>1)
+GROUP BY MOV_TITLE
+HAVING COUNT (*)>1;
+
+
+
+
+
+
+
+
+
+
+5.	Find the title of movies and number of stars for each movie that has at least one rating and find the highest number of stars that movie received. Sort the result by movie title.
+
+SELECT MOV_TITLE, MAX (REV_STARS)
+
+FROM MOVIES
+
+INNER JOIN RATING USING (MOV_ID)
+
+GROUP BY MOV_TITLE
+
+HAVING MAX (REV_STARS)>0
+
+ORDER BY MOV_TITLE;
+
+6.	Update rating of all movies directed by ‘Ram Gopal Verma’ to 5.
+
+UPDATE RATING SET REV_STARS=5
+
+WHERE MOV_ID IN (SELECT MOV_ID FROM MOVIES
+
+WHERE DIR_ID IN (SELECT DIR_ID
+
+FROM DIRECTOR
+
+WHERE DIR_NAME = ‘Ram Gopal Verma‘));
+
+
