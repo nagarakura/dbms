@@ -174,3 +174,55 @@ FROM r, s (SELECT bid
  HAVING 5<=COUNT(DISTINCT r2.sid)) b1 
 WHERE b1.bid=r.bid AND r.sid=s.sid 
 GROUP BY b1.bid 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Find all information of sailors who have reserved boat number 101.
+SELECT S.*
+FROM Sailors S, Reserves R
+WHERE S.sid = R.sid AND R.bid = 103
+Or without using the range variables, S and R
+SELECT Sailors.*
+FROM Sailors, Reserves
+WHERE Sailors.sid = Reserves.sid AND Reserves.bid = 103
+* can be used if you want to retrieve all columns.
+Ex3. Find the names of sailors who have reserved a red boat, and list in the order of age.
+SELECT S.sname, S.age
+FROM Sailors S, Reserves R, Boats B
+WHERE S.sid = R.sid AND R.bid = B.bid AND B.color = ‘red’
+ORDER BY S.age
+ORDER BY S.age [ASC] (default)
+ORDER BY S.age DESC
+Ex4. Find the names of sailors who have reserved at least one boat.
+SELECT sname
+FROM Sailors S, Reserves R
+WHERE S.sid = R.sid
+The join of Sailors and Reserves ensure that for each select sname, the sailor has made some 
+reservation. 
+Ex5. Find the ids and names of sailors who have reserved two different boats on the same day.
+SELECT DISTINCT S.sid, S.sname
+FROM Sailors S, Reserves R1, Reserves R2
+WHERE S.sid = R1.sid AND S.sid = R2.sid
+AND R1.day = R2.day AND R1.bid <> R2.bid
+Ex6. Using Expressions and Strings in the SELECT Command.
+SELECT sname, age, rating + 1 as sth
+FROM Sailors 
+WHERE 2* rating – 1 < 10 AND sname like ‘B_%b’
+SQL provides for pattern matching through LIKE operator, along with the use of symbols: 
+% (which stands for zero or more arbitrary characters) and
+_ (which stands for exactly one, arbitrary, characters)
